@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Ateliux DevOps Dashboard
 
-## Getting Started
+Painel demo para monitoração, confiabilidade e operações de plataforma, construído com Next.js 15 (App Router) e UI interativa em React 19 + Framer Motion.
 
-First, run the development server:
+## Visão geral
+- **Domínios cobertos:** overview de saúde, alertas, deploys, SLOs, tráfego, erros, workloads Kubernetes, pipelines, incidentes, storage, acessos.
+- **Dados mockados:** todas as métricas e listas vêm de mocks locais (sem dependência externa), otimizados para demonstração.
+- **UI responsiva e animada:** gradientes, microinterações, toasts, pesquisa global simulada e gráficos sparkline.
+- **Idiomas e acessibilidade:** rótulos em português, aria-labels preenchidos e placeholders legíveis.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Arquitetura rápida
+- **App Router:** `app/layout.jsx` é server component com metadata e `dynamic = "force-static"`. O shell interativo fica em `components/shell/AppShell.jsx` (client) com Sidebar, Topbar, Toast/Preferences providers.
+- **Componentização:** cards e painéis em `components/devops`, gráficos leves em `components/k8s/MiniSpark.jsx`, elementos de shell em `components/shell`.
+- **Mocks:** dados em `lib/devops/overview.js` e demais domínios em `lib/`. Páginas (ex.: `app/dashboard/overview/page.jsx`) consomem direto, sem API calls.
+- **Estilo:** Tailwind 4 (postcss) com fundo escuro, bordas translúcidas e gradientes; ícones `lucide-react` com otimização de imports.
+- **Animações:** Framer Motion para hover/entradas; respeita `prefers-reduced-motion`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Otimizações implementadas
+- Remoção de hydration mismatch nos sparklines (estado inicial fixo, transições separadas por motion).
+- Memoização de gráficos/cards (`memo`), arrays estáticas fora do render.
+- `optimizePackageImports` para `lucide-react` no `next.config.mjs`, reduzindo bundle inicial.
+- Layout server-only + shell client, permitindo páginas mais estáticas e menos JS crítico.
+- Textos corrigidos (acentos/cedilha) e aria labels revisados para acessibilidade.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Como rodar
+1) Instale dependências: `npm install`
+2) Desenvolvimento com Turbopack: `npm run dev`
+3) Lint: `npm run lint`
+4) Build prod com Turbopack: `npm run build`  
+5) Start prod: `npm start`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura principal
+- `app/` — rotas e páginas (App Router).  
+- `components/` — UI reutilizável (devops, k8s, shell, ui).  
+- `lib/` — dados mockados e utilidades.  
+- `public/` — assets estáticos (inclui `logoAteliux.svg` usado na Sidebar).  
+- `app/globals.css` — tokens e estilos globais.
 
-## Learn More
+## Deploy na Vercel
+- Build command: `npm run build`
+- Output: `.next/`
+- Variáveis: nenhuma obrigatória; dados são mockados.
+- Turbo já habilitado (Next 15.5.4), sem config extra.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notas de demo
+- Sem backend real; todos os botões “executar/aprovar” usam toasts ou alerts simulados.
+- Páginas intensivas de UI (overview, workloads, pipelines) foram pensadas para mostrar interatividade, mantendo carregamento rápido com dados locais.
